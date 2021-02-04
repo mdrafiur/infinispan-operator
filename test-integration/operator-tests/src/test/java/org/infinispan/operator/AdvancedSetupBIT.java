@@ -3,9 +3,13 @@ package org.infinispan.operator;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.fabric8.kubernetes.api.model.Pod;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.entity.ContentType;
 import org.assertj.core.api.Assertions;
@@ -121,6 +125,18 @@ class AdvancedSetupBIT {
       Assertions.assertThat(response.code()).as(response.response()).isEqualTo(200);
    }
 
+   /**
+    * Default AntiAffinity settings should prevent scheduling all three nodes on the same OCP host.
+    * It's required to have OCP cluster with at least 3 worker nodes for the test to pass
+    */
+   @Test
+   void antiAffinityTest() {
+      List<Pod> clusterPods = openShift.pods().withLabel("clusterName", appName).list().getItems();
+      Set<String> nodeNames = clusterPods.stream().map(p -> p.getSpec().getNodeName()).collect(Collectors.toSet());
+
+      Assertions.assertThat(nodeNames).hasSize(3);
+   }
+   
    /**
     * Verifies replicationFactor of default cache is set to 1 by reading cache configuration.
     */
