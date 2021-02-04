@@ -68,8 +68,10 @@ public class Infinispan {
 
          List<Condition> conditions = infinispanObject.getStatus().getConditions();
          if (conditions != null) {
-            Condition WellFormed = conditions.stream().filter(c -> "WellFormed".equals(c.getType())).findFirst().orElse(null);
-            return WellFormed != null && "True".equals(WellFormed.getStatus());
+            Condition wellFormed = conditions.stream()
+                    .filter(c -> "WellFormed".equals(c.getType()) || "wellFormed".equals(c.getType()))
+                    .findFirst().orElse(null);
+            return wellFormed != null && "True".equals(wellFormed.getStatus());
          } else {
             return false;
          }
