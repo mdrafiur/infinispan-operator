@@ -136,7 +136,7 @@ class AdvancedSetupBIT {
 
       Assertions.assertThat(nodeNames).hasSize(3);
    }
-   
+
    /**
     * Verifies replicationFactor of default cache is set to 1 by reading cache configuration.
     */
